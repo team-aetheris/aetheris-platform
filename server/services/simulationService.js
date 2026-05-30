@@ -1,6 +1,7 @@
 const Shipment = require("../models/Shipment");
 const socketUtil = require("../sockets/socket");
 const alertService = require("./alertService");
+const riskScoring = require("./riskScoringService");
 
 const statusTransitions = {
   Processing: ["In Transit"],
@@ -27,12 +28,15 @@ const simulateShipmentUpdate = async (shipment) => {
   const riskDelta = (Math.random() * 10 - 5).toFixed(1);
   const tempDelta = (Math.random() * 4 - 2).toFixed(1);
 
+  const newTemperature = roundOne(shipment.temperature + Number(tempDelta));
+  const newRisk = riskScoring.calculateRisk({ status: nextStatus, temperature: newTemperature });
+
   const updated = await Shipment.findByIdAndUpdate(
     shipment._id,
     {
       status: nextStatus,
-      riskScore: clamp(shipment.riskScore + Number(riskDelta), 0, 100),
-      temperature: roundOne(shipment.temperature + Number(tempDelta)),
+      riskScore: newRisk,
+      temperature: newTemperature,
     },
     { new: true }
   );
@@ -44,6 +48,7 @@ const simulateShipmentUpdate = async (shipment) => {
   try {
     const io = socketUtil.getIO();
     io.emit("shipment:updated", { success: true, data: updated });
+    io.emit("risk:updated", { success: true, shipmentId: updated.shipmentId, riskScore: updated.riskScore });
   } catch (err) {
     // Silent failure if realtime is unavailable.
   }
