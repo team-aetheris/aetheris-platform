@@ -1,4 +1,8 @@
+const socketUtil = require("./socket");
+
 module.exports = (io) => {
+  socketUtil.init(io);
+
   io.on("connection", (socket) => {
     console.log("Client connected");
 
