@@ -1,5 +1,6 @@
 const Shipment = require("../models/Shipment");
 const socketUtil = require("../sockets/socket");
+const alertService = require("./alertService");
 
 const createShipment = async (payload) => {
   const shipment = await Shipment.create(payload);
@@ -9,8 +10,9 @@ const createShipment = async (payload) => {
     io.emit("shipment:created", { success: true, data: shipment });
   } catch (err) {
     // Socket not initialized or emit failed — fail silently for now
-    // This keeps API behavior unchanged if realtime infra isn't available
   }
+
+  await alertService.createAlertsForShipment(shipment);
 
   return shipment;
 };
