@@ -8,6 +8,7 @@ const { Server } = require("socket.io");
 const connectDB = require("./config/db");
 const shipmentRoutes = require("./routes/shipmentRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const copilotRoutes = require("./routes/copilotRoutes");
 const socketManager = require("./sockets/socketManager");
 const simulationService = require("./services/simulationService");
 
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use("/api/shipments", shipmentRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/copilot", copilotRoutes);
 
 app.get("/", (req, res) => {
   res.json({ success: true, data: "Aetheris Backend Running" });
