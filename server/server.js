@@ -9,6 +9,7 @@ const connectDB = require("./config/db");
 const shipmentRoutes = require("./routes/shipmentRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const socketManager = require("./sockets/socketManager");
+const simulationService = require("./services/simulationService");
 
 const app = express();
 
@@ -42,6 +43,7 @@ const startServer = async () => {
     });
 
     socketManager(io);
+    simulationService.startSimulation();
 
     httpServer.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
