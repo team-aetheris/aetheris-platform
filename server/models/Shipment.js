@@ -33,6 +33,17 @@ const shipmentSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    analysis: {
+      summary: {
+        type: String,
+      },
+      recommendation: {
+        type: String,
+      },
+      severity: {
+        type: String,
+      },
+    },
     eta: {
       type: Date,
       required: true,
